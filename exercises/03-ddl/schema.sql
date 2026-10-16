@@ -1,0 +1,5 @@
+-- Exercise 03: Library schema (runnable on an empty PostgreSQL database)
+--
+-- [ ] At least one CHECK
+-- [ ] At least one composite UNIQUE
+-- [ ] At least one FK whose ON DELETE is justified in a comment

@@ -1,0 +1,7 @@
+-- Exercise 06: Window functions and views
+--
+-- [ ] Top 3 films per category (ties handled)
+-- [ ] Cumulative revenue per day
+-- [ ] Change compared with the previous month
+-- [ ] Each customer's position in their store's ranking
+-- [ ] Materialised view of monthly revenue with refresh

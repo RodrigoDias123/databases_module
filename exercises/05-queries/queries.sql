@@ -1,0 +1,3 @@
+-- Exercise 05: 10 business questions on Pagila
+--
+-- [ ] Each query preceded by the question it answers

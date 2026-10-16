@@ -1,0 +1,3 @@
+-- Exercise 04: 12 CRUD operations on Pagila
+--
+-- [ ] Each operation with its expected result (row count or value)

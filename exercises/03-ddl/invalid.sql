@@ -1,0 +1,3 @@
+-- Exercise 03: 5 INSERTs that must fail
+--
+-- [ ] Each INSERT with a comment naming the constraint that rejects it
