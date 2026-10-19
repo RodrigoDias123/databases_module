@@ -1,3 +1,8 @@
+
+> [!IMPORTANT]
+> The content of this file was co-authored with Claude Code. It helped me write this content with given restricted guidelines. 
+> Please open a PR or reach out to me if you find any error or missing piece or simply for any type of feedback.
+
 # Databases Module
 
 Module 11 of the Web Programming course (PW 25/27). 19 sessions of 3 hours, 57 hours in total.
@@ -53,8 +58,9 @@ These projects show the tutorial, not the exercise. Your exercise answers still 
 ## Submitting exercises
 
 - Each exercise goes in `exercises/NN-topic/` in your fork, using the folder name given in each session below.
-- Commit and push before the start of the next session. Work pushed after that is treated as not submitted.
-- Challenges are optional. Put them in a `challenge/` folder inside the exercise folder.
+- Commit and push before the end of the last session day (session 19).
+- Challenges are MANDATORY.
+- Please be clear when you put your exercise and challlenge files. Ensure that its easy to see which are from the exercise and the ones from the challenge
 
 Each of the 16 exercises (sessions 01 to 16) is marked 0 (not submitted), 1 (incomplete or with relevant errors) or 2 (complete and correct).
 
@@ -161,14 +167,10 @@ To classify a use case, ask: must this data never be lost or contradicted? Is it
 Folder: `exercises/01-diagnosis/README.md`
 
 1. A screenshot of `docker compose ps` with the three engines healthy.
-2. The data model of your Project I: list of tables and relationships.
+2. The data model of your database: list of tables and relationships.
 3. Three concrete problems in that model (for example duplicated data, a missing constraint, a field that should be a table, a price calculated on read), with the file and line where each one is.
 4. What would happen with 100,000 records, or with two users writing at the same time.
 5. Would any of the data be better in MongoDB or Redis? Why?
-
-If you do not have a Project I, use booking-lite or, with permission, a colleague's project.
-
-Marked 2 when all five points are answered with examples from the actual code.
 
 ### Challenge
 
@@ -262,8 +264,6 @@ The requirements for a municipal library are in the exercise folder: readers, bo
 3. One denormalisation you would make and why, or why you would make none.
 
 You will implement this model in exercise 03.
-
-Group project: read the common brief and your group's scenario, and list your questions.
 
 ### Challenge
 
@@ -370,10 +370,6 @@ Folder: `exercises/03-ddl/`
 
 1. `schema.sql`, runnable on an empty PostgreSQL database, implementing your library model from exercise 02. Include at least one `CHECK`, one composite `UNIQUE`, and one foreign key whose `ON DELETE` is justified in a comment.
 2. `invalid.sql` with 5 `INSERT` statements that must fail, each with a comment naming the constraint that rejects it.
-
-Marked 2 when the schema runs without errors and the 5 invalid inserts fail for the stated reason.
-
-Group project: first version of the group's ER model (Mermaid in the README), reviewed by the trainer.
 
 ### Challenge
 
@@ -486,10 +482,6 @@ Time the same load with one `INSERT` per row to see the difference.
 Folder: `exercises/04-crud/queries.sql`
 
 12 operations on Pagila, with the expected result (row count or value) given in the brief. Examples: films rated `PG-13` and longer than 120 minutes sorted by title; customers with no rentals in the last year; update the rental rate of one category using `RETURNING`; upsert an actor; delete test payments after checking the `WHERE` first.
-
-Marked 2 for 11 or 12 correct, 1 for 6 to 10.
-
-Group project: complete DDL for your scenario and start the seed with volume.
 
 ### Challenge
 
