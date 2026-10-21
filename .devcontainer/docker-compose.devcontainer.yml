@@ -1,0 +1,17 @@
+# Merged on top of ../docker-compose.yml. Relative paths resolve from the
+# repository root, because the root compose file is the first one listed.
+services:
+  devcontainer:
+    build:
+      context: .devcontainer
+    command: sleep infinity
+    env_file: .env
+    volumes:
+      - .:/workspaces/databases_module:cached
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy

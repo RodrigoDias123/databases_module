@@ -1,0 +1,43 @@
+{
+  "name": "Databases Module",
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.devcontainer.yml"],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/databases_module",
+  "shutdownAction": "none",
+
+  // Runs on the host before the containers start: creates .env from the example
+  // and pins the compose project name to the one in docker-compose.yml, so the
+  // named volumes and `docker compose exec` match a plain `docker compose up`.
+  "initializeCommand": "[ -f .env ] || cp .env.example .env; grep -q '^COMPOSE_PROJECT_NAME=' .env || printf '\\nCOMPOSE_PROJECT_NAME=databases-module\\n' >> .env",
+
+  "features": {
+    // The repo scripts and README commands use `docker compose exec`
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    // For the nextjs/ projects in sessions/
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+
+  // Inside the container the engines are reached by service name, not localhost.
+  // Credentials come from .env, injected by the compose env_file.
+  "remoteEnv": {
+    "PGHOST": "postgres",
+    "PGUSER": "${containerEnv:POSTGRES_USER}",
+    "PGPASSWORD": "${containerEnv:POSTGRES_PASSWORD}",
+    "REDISCLI_AUTH": "${containerEnv:REDIS_PASSWORD}",
+    "REDIS_URL": "redis://:${containerEnv:REDIS_PASSWORD}@redis:6379/0",
+    "MONGO_URL": "mongodb://${containerEnv:MONGO_ROOT_USER}:${containerEnv:MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin",
+    "UV_LINK_MODE": "copy"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-ossdata.vscode-pgsql",
+        "mongodb.mongodb-vscode",
+        "redis.redis-for-vscode"
+      ]
+    }
+  }
+}
