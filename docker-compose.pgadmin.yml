@@ -1,0 +1,28 @@
+# pgAdmin in the browser, next to the course PostgreSQL. Use it together with docker-compose.yml:
+#
+#   docker compose -p databases-modulev -f docker-compose.yml -f docker-compose.pgadmin.yml up -d pgadmin
+#
+# Then open http://localhost:5050 and register a server with host "postgres", port 5432,
+# user and password from .env. Stop it with:
+#
+#   docker compose -p databases-modulev -f docker-compose.yml -f docker-compose.pgadmin.yml stop pgadmin
+#
+# Desktop mode: no pgAdmin login, so the port is bound to 127.0.0.1 only.
+services:
+  pgadmin:
+    image: dpage/pgadmin4:9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgadmin_data:
