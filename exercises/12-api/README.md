@@ -11,7 +11,7 @@ Marked 2 when the migrations are reversible and the 3 endpoints are correct.
 
 Group project: initial migration of your scenario and an API with the main flows, including the critical transaction.
 
-## Challenge (opcional, em `challenge/`)
+## Challenge (obrigatório, em `challenge/`)
 
 Rename a column used by the API with zero downtime, using the expand and contract pattern across three migrations: (1) add the new column and keep both in sync with a trigger, (2) switch the code to the new column and backfill, (3) drop the old column and the trigger. Show that at every step both the old and the new version of the API work against the database.
 

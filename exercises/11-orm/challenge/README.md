@@ -1,6 +1,6 @@
 # Challenge 11: ORM I, SQLAlchemy
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

@@ -1,6 +1,6 @@
 # Challenge 13: MongoDB I, documents, CRUD and validation
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

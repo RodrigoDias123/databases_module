@@ -1,6 +1,6 @@
 # Challenge 07: Indexes and optimisation
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

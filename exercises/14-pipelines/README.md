@@ -11,7 +11,7 @@ Marked 2 when the 4 pipelines are correct and the restore has been tested.
 
 Group project: report generation, 3 pipelines and MongoDB backup. Milestone M3 closes at the end of this session.
 
-## Challenge (opcional, em `challenge/`)
+## Challenge (obrigatório, em `challenge/`)
 
 Build an incremental daily revenue report with `$merge`: each run processes only the days that changed since the last run (track a watermark in a separate document), and running it twice in a row produces exactly the same result. Prove both properties with a test that inserts new rentals between runs.
 

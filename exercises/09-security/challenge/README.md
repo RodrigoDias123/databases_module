@@ -1,6 +1,6 @@
 # Challenge 09: Security
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

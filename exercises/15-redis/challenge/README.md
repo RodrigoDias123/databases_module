@@ -1,6 +1,6 @@
 # Challenge 15: Redis I, data structures and patterns
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

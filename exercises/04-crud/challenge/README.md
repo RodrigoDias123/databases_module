@@ -1,6 +1,6 @@
 # Challenge 04: CRUD, upsert and bulk data
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

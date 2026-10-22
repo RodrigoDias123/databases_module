@@ -1,6 +1,6 @@
 # Challenge 01: Database engines and diagnosis
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

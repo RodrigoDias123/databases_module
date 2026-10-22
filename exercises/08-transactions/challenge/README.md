@@ -1,6 +1,6 @@
 # Challenge 08: Transactions and concurrency
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

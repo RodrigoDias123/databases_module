@@ -1,6 +1,6 @@
 # Challenge 16: Redis II, source of truth, rebuild and persistence
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

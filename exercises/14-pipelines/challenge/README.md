@@ -1,6 +1,6 @@
 # Challenge 14: MongoDB II, aggregation pipelines and reports
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

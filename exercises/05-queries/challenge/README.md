@@ -1,6 +1,6 @@
 # Challenge 05: Queries I, joins, aggregation, subqueries and CTEs
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

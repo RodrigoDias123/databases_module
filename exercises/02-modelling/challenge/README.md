@@ -1,6 +1,6 @@
 # Challenge 02: Modelling, ER diagrams and normalisation
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

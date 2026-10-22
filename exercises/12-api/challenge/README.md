@@ -1,6 +1,6 @@
 # Challenge 12: ORM II, migrations, transactions and API
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

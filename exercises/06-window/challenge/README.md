@@ -1,6 +1,6 @@
 # Challenge 06: Queries II, window functions and views
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 

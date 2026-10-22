@@ -1,6 +1,6 @@
 # Challenge 10: Backup and restore
 
-Opcional.
+Obrigatório.
 
 ## Enunciado
 
