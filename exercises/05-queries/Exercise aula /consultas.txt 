@@ -1,0 +1,17 @@
+
+Olhando para o esquema de mermaid.md faz 5 consultas:
+
+O que quero ver ?
+O que Preciso para ver isso ?
+
+1. Queria para listar todos os pacientes e seus dados pessoais.
+   Resposta: Preciso de todos os campos da tabela `PATIENT`.
+
+2. Queria para listar todos os casos clínicos de um paciente específico.
+   Resposta: Preciso do `patient_id` da tabela `PATIENT` e dos campos da tabela `CLINICAL_CASE`.
+
+3. Queria para listar todos os episódios de um caso clínico específico.
+   Resposta: Preciso do `case_id` da tabela `CLINICAL_CASE` e dos campos da tabela `EPISODE`.
+
+4. Queria para listar todas as faturas e os seguros que as cobrem.
+    Resposta: Preciso dos campos da tabela `FINANCE` e da tabela `INSURANCE_FINANCE` e da tabela `INSURANCE`.
