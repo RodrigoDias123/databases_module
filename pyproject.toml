@@ -21,4 +21,5 @@ build-backend = "uv_build"
 [tool.uv.workspace]
 members = [
     "exercises/01-diagnosis/challenge",
+    "exercises/04-crud/challenge",
 ]
