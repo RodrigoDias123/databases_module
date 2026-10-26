@@ -18,3 +18,10 @@ Paginate `big_rental` for one customer sorted by date, 20 rows per page. Compare
 - [ ] Query 4: plan before, index created, plan after, times, one-sentence explanation
 - [ ] Query 5: plan before, index created, plan after, times, one-sentence explanation
 - [ ] Identify (and prove with plans) any query an index cannot fix
+
+
+explicação do exercicio do professor:
+
+- eplicar o que a que faz
+- que indice é que as tabelas devem ter que a consulta seja optimizada
+- caso a criação de index nao melhore a condição da consulta, explicar o porquê
