@@ -22,4 +22,5 @@ build-backend = "uv_build"
 members = [
     "exercises/01-diagnosis/challenge",
     "exercises/04-crud/challenge",
+    "exercises/08-transactions/Exercise aula ",
 ]

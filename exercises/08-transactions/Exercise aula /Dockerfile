@@ -14,5 +14,6 @@ COPY pyproject.toml .
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --no-dev
 
 COPY app/ ./app/
+COPY data/ ./data/
 
 CMD ["python", "-m", "app.main"]

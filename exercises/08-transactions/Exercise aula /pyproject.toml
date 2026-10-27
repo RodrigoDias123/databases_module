@@ -6,3 +6,8 @@ dependencies = [
     "psycopg[binary]>=3.3.6",
     "sqlalchemy>=2.1.6",
 ]
+
+[dependency-groups]
+dev = [
+    "faker>=40.43.0",
+]

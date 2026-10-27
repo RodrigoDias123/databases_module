@@ -1,27 +1,257 @@
 [
   {
-    "nome": "Rastreio Faro",
+    "nome": "Rastreio Bragança",
     "participants": [
-      {"nome": "Ana Martins", "localidade": "Faro", "dnasc": "1990-05-10", "alt": 1.65, "peso": 60.0, "bp_sys": 118, "bp_dia": 76, "hr": 70},
-      {"nome": "Rui Costa", "localidade": "Faro", "dnasc": "1975-12-01", "alt": 1.80, "peso": 95.5, "bp_sys": 142, "bp_dia": 92, "hr": 82},
-      {"nome": "Marta Sousa", "localidade": "Faro", "dnasc": "1988-03-22", "alt": 1.58, "peso": 54.2, "bp_sys": 112, "bp_dia": 72, "hr": 64},
-      {"nome": "João Pires", "localidade": "Faro", "dnasc": "1962-08-15", "alt": 1.72, "peso": 81.0, "bp_sys": 134, "bp_dia": 85, "hr": 76}
+      {
+        "nome": "Ângelo Amaral",
+        "localidade": "Bragança",
+        "dnasc": "1953-09-11",
+        "alt": 1.77,
+        "peso": 86.0,
+        "bp_sys": 134,
+        "bp_dia": 68,
+        "hr": 78
+      },
+      {
+        "nome": "Afonso Carneiro",
+        "localidade": "Bragança",
+        "dnasc": "1976-10-16",
+        "alt": 1.78,
+        "peso": 78.1,
+        "bp_sys": 106,
+        "bp_dia": 65,
+        "hr": 77
+      },
+      {
+        "nome": "Jaime Leite",
+        "localidade": "Bragança",
+        "dnasc": "1960-08-28",
+        "alt": 1.85,
+        "peso": 117.3,
+        "bp_sys": 128,
+        "bp_dia": 78,
+        "hr": 58
+      }
     ]
   },
   {
-    "nome": "Rastreio Lagos",
+    "nome": "Rastreio Setúbal",
     "participants": [
-      {"nome": "Inês Gomes", "localidade": "Lagos", "dnasc": "2001-11-30", "alt": 1.70, "peso": 63.4, "bp_sys": 122, "bp_dia": 78, "hr": 68},
-      {"nome": "Pedro Neves", "localidade": "Lagos", "dnasc": "1955-02-09", "alt": 1.68, "peso": 88.7, "bp_sys": 156, "bp_dia": 96, "hr": 88},
-      {"nome": "Sofia Ramos", "localidade": "Lagos", "dnasc": "1995-07-04", "alt": 1.62, "peso": 57.0, "bp_sys": 108, "bp_dia": 70, "hr": 72}
+      {
+        "nome": "Tiago Araújo",
+        "localidade": "Setúbal",
+        "dnasc": "1963-06-15",
+        "alt": 1.67,
+        "peso": 52.8,
+        "bp_sys": 123,
+        "bp_dia": 64,
+        "hr": 59
+      },
+      {
+        "nome": "Lorena Rocha",
+        "localidade": "Setúbal",
+        "dnasc": "1952-06-15",
+        "alt": 1.61,
+        "peso": 71.9,
+        "bp_sys": 136,
+        "bp_dia": 80,
+        "hr": 75
+      },
+      {
+        "nome": "Teresa Fernandes-Carneiro",
+        "localidade": "Setúbal",
+        "dnasc": "1984-09-28",
+        "alt": 1.59,
+        "peso": 61.1,
+        "bp_sys": 103,
+        "bp_dia": 79,
+        "hr": 78
+      },
+      {
+        "nome": "Emília Amorim",
+        "localidade": "Setúbal",
+        "dnasc": "1955-07-11",
+        "alt": 1.7,
+        "peso": 67.3,
+        "bp_sys": 135,
+        "bp_dia": 82,
+        "hr": 75
+      }
     ]
   },
   {
-    "nome": "Rastreio Tavira",
+    "nome": "Rastreio Braga",
     "participants": [
-      {"nome": "Carlos Lopes", "localidade": "Tavira", "dnasc": "1980-09-18", "alt": 1.76, "peso": 77.3, "bp_sys": 128, "bp_dia": 79, "hr": 66},
-      {"nome": "Beatriz Silva", "localidade": "Tavira", "dnasc": "1970-01-27", "alt": 1.60, "peso": 72.8, "bp_sys": 138, "bp_dia": 88, "hr": 79},
-      {"nome": "Tiago Mendes", "localidade": "Tavira", "dnasc": "1999-04-12", "alt": 1.85, "peso": 79.1, "bp_sys": 117, "bp_dia": 75, "hr": 58}
+      {
+        "nome": "Denis da Brito",
+        "localidade": "Braga",
+        "dnasc": "1977-03-23",
+        "alt": 1.68,
+        "peso": 72.1,
+        "bp_sys": 115,
+        "bp_dia": 57,
+        "hr": 72
+      },
+      {
+        "nome": "Carlota Nascimento",
+        "localidade": "Braga",
+        "dnasc": "1976-10-19",
+        "alt": 1.61,
+        "peso": 81.5,
+        "bp_sys": 132,
+        "bp_dia": 68,
+        "hr": 55
+      },
+      {
+        "nome": "Micael da Oliveira",
+        "localidade": "Braga",
+        "dnasc": "1946-12-23",
+        "alt": 1.75,
+        "peso": 90.0,
+        "bp_sys": 152,
+        "bp_dia": 72,
+        "hr": 66
+      },
+      {
+        "nome": "Cristiano Gaspar",
+        "localidade": "Braga",
+        "dnasc": "1936-08-28",
+        "alt": 1.73,
+        "peso": 60.0,
+        "bp_sys": 135,
+        "bp_dia": 79,
+        "hr": 62
+      },
+      {
+        "nome": "Rui Moura",
+        "localidade": "Braga",
+        "dnasc": "1999-10-04",
+        "alt": 1.78,
+        "peso": 81.2,
+        "bp_sys": 124,
+        "bp_dia": 74,
+        "hr": 92
+      },
+      {
+        "nome": "Pedro Henriques",
+        "localidade": "Braga",
+        "dnasc": "1946-12-23",
+        "alt": 1.76,
+        "peso": 64.9,
+        "bp_sys": 140,
+        "bp_dia": 70,
+        "hr": 67
+      }
+    ]
+  },
+  {
+    "nome": "Rastreio Portalegre",
+    "participants": [
+      {
+        "nome": "Vitória Branco-Branco",
+        "localidade": "Portalegre",
+        "dnasc": "1953-05-27",
+        "alt": 1.62,
+        "peso": 64.5,
+        "bp_sys": 133,
+        "bp_dia": 75,
+        "hr": 54
+      },
+      {
+        "nome": "Vítor Vaz-Sá",
+        "localidade": "Portalegre",
+        "dnasc": "2004-12-09",
+        "alt": 1.79,
+        "peso": 97.2,
+        "bp_sys": 90,
+        "bp_dia": 55,
+        "hr": 75
+      },
+      {
+        "nome": "Álvaro Pinho",
+        "localidade": "Portalegre",
+        "dnasc": "1983-04-06",
+        "alt": 1.81,
+        "peso": 70.4,
+        "bp_sys": 125,
+        "bp_dia": 74,
+        "hr": 77
+      },
+      {
+        "nome": "Ismael Assunção",
+        "localidade": "Portalegre",
+        "dnasc": "1978-10-11",
+        "alt": 1.86,
+        "peso": 90.9,
+        "bp_sys": 126,
+        "bp_dia": 73,
+        "hr": 64
+      },
+      {
+        "nome": "Lara de Barbosa",
+        "localidade": "Portalegre",
+        "dnasc": "1975-03-09",
+        "alt": 1.62,
+        "peso": 64.3,
+        "bp_sys": 101,
+        "bp_dia": 68,
+        "hr": 69
+      },
+      {
+        "nome": "Ângela Magalhães",
+        "localidade": "Portalegre",
+        "dnasc": "1967-04-15",
+        "alt": 1.56,
+        "peso": 68.3,
+        "bp_sys": 125,
+        "bp_dia": 63,
+        "hr": 70
+      },
+      {
+        "nome": "Letícia Oliveira",
+        "localidade": "Portalegre",
+        "dnasc": "1949-10-21",
+        "alt": 1.51,
+        "peso": 54.6,
+        "bp_sys": 135,
+        "bp_dia": 81,
+        "hr": 82
+      }
+    ]
+  },
+  {
+    "nome": "Rastreio Beja",
+    "participants": [
+      {
+        "nome": "Benjamim Carvalho",
+        "localidade": "Beja",
+        "dnasc": "2003-06-12",
+        "alt": 1.77,
+        "peso": 75.7,
+        "bp_sys": 102,
+        "bp_dia": 67,
+        "hr": 51
+      },
+      {
+        "nome": "Rafaela Torres-Moreira",
+        "localidade": "Beja",
+        "dnasc": "1993-01-21",
+        "alt": 1.74,
+        "peso": 66.5,
+        "bp_sys": 118,
+        "bp_dia": 91,
+        "hr": 63
+      },
+      {
+        "nome": "Andreia Pinheiro",
+        "localidade": "Beja",
+        "dnasc": "1957-06-24",
+        "alt": 1.7,
+        "peso": 72.0,
+        "bp_sys": 115,
+        "bp_dia": 73,
+        "hr": 50
+      }
     ]
   }
 ]

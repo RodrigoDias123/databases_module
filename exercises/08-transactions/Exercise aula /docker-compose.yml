@@ -50,8 +50,8 @@ services:
       # Dentro da rede as duas bases estão na porta 5432, pelo nome do serviço.
       PG1_DSN: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg1:5432/${PG1_DB}
       PG2_DSN: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg2:5432/${PG2_DB}
-    volumes:
-      - ./data:/app/data:ro
+    # Sem bind mount de ./data: o Dockerfile copia-o para a imagem. Assim funciona também a partir do
+    # devcontainer, onde o Docker do host não conhece o caminho /workspaces/...
     networks: [pipeline]
     depends_on:
       pg1:

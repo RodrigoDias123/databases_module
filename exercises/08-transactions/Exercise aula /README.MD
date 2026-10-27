@@ -86,12 +86,30 @@ Todos os comandos correm a partir desta pasta (o nome termina com um espaço, po
 
 ```bash
 cd "exercises/08-transactions/Exercise aula "
+export COMPOSE_PROJECT_NAME=exercise-aula-08   # só no devcontainer, ver nota abaixo
 ```
+
+> **Nota (devcontainer):** o devcontainer define `COMPOSE_PROJECT_NAME=databases-module`, que se sobrepõe ao
+> `name:` do `docker-compose.yml`. Sem o `export`, a pg1, a pg2 e a app entram no projeto do curso: o
+> `docker compose ps` mostra também o Postgres, o Mongo e o Redis do curso, e um `down --remove-orphans`
+> apagava-os. O `export` só vale para esse terminal; num terminal novo é preciso repeti-lo.
 
 ### 1. Configurar
 
 ```bash
 cp .env.example .env    # e muda a POSTGRES_PASSWORD
+```
+
+### 1.1. Gerar os dados (opcional)
+
+O `data/participants.json` é gerado com o [Faker](https://faker.readthedocs.io/) (locale `pt_PT`): cada pedido
+é um rastreio num distrito, com nomes, datas de nascimento e valores de saúde plausíveis. Os distritos só se
+repetem depois de usados os 18. O Faker é dependência de desenvolvimento e corre fora do container, com o uv:
+
+```bash
+uv run python -m app.fake_data                       # 5 pedidos, 3 a 10 participantes cada
+uv run python -m app.fake_data --tasks 20 --seed 42  # mais pedidos, sempre os mesmos dados
+uv run python -m app.fake_data --help                # todas as opções (--min, --max, --output)
 ```
 
 ### 2. Arrancar as bases
@@ -118,8 +136,9 @@ docker compose run --rm --build app python -m app.ingestion      # JSON -> PG1
 docker compose run --rm --build app python -m app.generator      # PG1 -> PG2
 ```
 
-O `--build` reconstrói a imagem, para apanhar as alterações ao código. A ingestão volta a inserir o
-ficheiro todo de cada vez que corre. O generator só processa as tasks com `status = 'pendente'`.
+O `--build` reconstrói a imagem, para apanhar as alterações ao código e ao `data/` (o JSON é copiado para a
+imagem, não montado). A ingestão volta a inserir o ficheiro todo de cada vez que corre. O generator só
+processa as tasks com `status = 'pendente'`.
 
 ### 4. Ver os resultados
 
@@ -134,6 +153,8 @@ docker compose exec pg2 psql -U postgres -d reports \
 ```
 
 A partir do host também dá para ligar com um cliente qualquer: `localhost:5434` (PG1) e `localhost:5433` (PG2).
+Dentro do devcontainer estas portas não estão acessíveis (só escutam no `127.0.0.1` do host); aí usa o
+`docker compose exec` acima.
 
 ### 5. Parar / recomeçar do zero
 
