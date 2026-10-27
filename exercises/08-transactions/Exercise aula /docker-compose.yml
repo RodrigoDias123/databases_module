@@ -1,0 +1,67 @@
+# Exercício da aula: pg1 (dados de origem), pg2 (relatórios) e app (Python) na mesma rede.
+# As tabelas são criadas pela app (app/models/), não por scripts SQL.
+#
+#   cp .env.example .env
+#   docker compose up -d pg1 pg2
+#   docker compose run --rm app
+#
+# As portas do host vêm do .env. A PG1 usa a 5434 (e não a 5432) para não colidir com o
+# Postgres do curso (docker-compose.yml da raiz).
+name: exercise-aula-08
+
+services:
+  pg1:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PG1_DB}
+    ports:
+      - "127.0.0.1:${PG1_HOST_PORT:-5434}:5432"
+    volumes:
+      - pg1_data:/var/lib/postgresql
+    networks: [pipeline]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  pg2:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PG2_DB}
+    ports:
+      - "127.0.0.1:${PG2_HOST_PORT:-5433}:5432"
+    volumes:
+      - pg2_data:/var/lib/postgresql
+    networks: [pipeline]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    environment:
+      # Dentro da rede as duas bases estão na porta 5432, pelo nome do serviço.
+      PG1_DSN: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg1:5432/${PG1_DB}
+      PG2_DSN: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg2:5432/${PG2_DB}
+    volumes:
+      - ./data:/app/data:ro
+    networks: [pipeline]
+    depends_on:
+      pg1:
+        condition: service_healthy
+      pg2:
+        condition: service_healthy
+
+networks:
+  pipeline:
+
+volumes:
+  pg1_data:
+  pg2_data:

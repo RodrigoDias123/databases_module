@@ -1,0 +1,27 @@
+[
+  {
+    "nome": "Rastreio Faro",
+    "participants": [
+      {"nome": "Ana Martins", "localidade": "Faro", "dnasc": "1990-05-10", "alt": 1.65, "peso": 60.0, "bp_sys": 118, "bp_dia": 76, "hr": 70},
+      {"nome": "Rui Costa", "localidade": "Faro", "dnasc": "1975-12-01", "alt": 1.80, "peso": 95.5, "bp_sys": 142, "bp_dia": 92, "hr": 82},
+      {"nome": "Marta Sousa", "localidade": "Faro", "dnasc": "1988-03-22", "alt": 1.58, "peso": 54.2, "bp_sys": 112, "bp_dia": 72, "hr": 64},
+      {"nome": "João Pires", "localidade": "Faro", "dnasc": "1962-08-15", "alt": 1.72, "peso": 81.0, "bp_sys": 134, "bp_dia": 85, "hr": 76}
+    ]
+  },
+  {
+    "nome": "Rastreio Lagos",
+    "participants": [
+      {"nome": "Inês Gomes", "localidade": "Lagos", "dnasc": "2001-11-30", "alt": 1.70, "peso": 63.4, "bp_sys": 122, "bp_dia": 78, "hr": 68},
+      {"nome": "Pedro Neves", "localidade": "Lagos", "dnasc": "1955-02-09", "alt": 1.68, "peso": 88.7, "bp_sys": 156, "bp_dia": 96, "hr": 88},
+      {"nome": "Sofia Ramos", "localidade": "Lagos", "dnasc": "1995-07-04", "alt": 1.62, "peso": 57.0, "bp_sys": 108, "bp_dia": 70, "hr": 72}
+    ]
+  },
+  {
+    "nome": "Rastreio Tavira",
+    "participants": [
+      {"nome": "Carlos Lopes", "localidade": "Tavira", "dnasc": "1980-09-18", "alt": 1.76, "peso": 77.3, "bp_sys": 128, "bp_dia": 79, "hr": 66},
+      {"nome": "Beatriz Silva", "localidade": "Tavira", "dnasc": "1970-01-27", "alt": 1.60, "peso": 72.8, "bp_sys": 138, "bp_dia": 88, "hr": 79},
+      {"nome": "Tiago Mendes", "localidade": "Tavira", "dnasc": "1999-04-12", "alt": 1.85, "peso": 79.1, "bp_sys": 117, "bp_dia": 75, "hr": 58}
+    ]
+  }
+]
