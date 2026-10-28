@@ -2,75 +2,63 @@
 
 ## Enunciado
 
-Folder: `exercises/01-diagnosis/README.md`
+Folder: `exercises/01-diagnosis/exercise/`
 
-1. A screenshot of `docker compose ps` with the three engines healthy.
-2. The data model of your database: list of tables and relationships.
-3. Three concrete problems in that model (for example duplicated data, a missing constraint, a field that should be a table, a price calculated on read), with the file and line where each one is.
-4. What would happen with 100,000 records, or with two users writing at the same time.
-5. Would any of the data be better in MongoDB or Redis? Why?
+**Goal.** Diagnose the problems of a small shop that keeps its data in a JSON file, and decide which engine each kind of data belongs in.
+
+**Starting point.** The module environment running (`docker compose up -d`). Save the following content as `shop.json` in your exercise folder, exactly as shown, so that line numbers match:
+
+```json
+{
+  "customers": [
+    {"id": 1, "name": "Ana Silva", "email": "ana@example.com", "city": "Porto"},
+    {"id": 2, "name": "Rui Costa", "email": "rui@example.com", "city": "Lisboa"}
+  ],
+  "orders": [
+    {"id": 1, "customer_id": 1, "customer_name": "Ana Silva", "customer_email": "ana@example.com",
+     "items": "Keyboard x1; Mouse x2", "total": "59.90", "date": "07/10/2026"},
+    {"id": 2, "customer_id": 3, "customer_name": "Marta Reis", "customer_email": "marta@example",
+     "items": "Monitor x1", "total": "abc", "date": "2026-10-08"},
+    {"id": 2, "customer_id": 1, "customer_name": "Ana Silva", "customer_email": "ana.silva@example.com",
+     "items": "Mouse x-1", "total": 12.5, "date": "08/10/2026"}
+  ],
+  "products": [
+    {"name": "Keyboard", "price": 29.90, "stock": 3},
+    {"name": "Mouse", "price": "15", "stock": -2}
+  ]
+}
+```
+
+The shop's application reads the whole file, changes it in memory and writes the whole file back on every request.
+
+**Tasks.**
+
+1. Take a screenshot of `docker compose ps` with the three engines `healthy`.
+2. Describe the data model of `shop.json`: the entities, their fields and the relationships between them.
+3. Find at least 5 concrete problems in `shop.json`. For each one give the line number, the kind of problem (for example duplicated data, missing integrity rule, wrong type, a list stored in a single field, inconsistent format) and what can go wrong because of it.
+4. Explain what happens to this design with 100,000 orders (finding the orders of one customer, adding one order) and when two requests add an order at the same time.
+5. Say which engine (PostgreSQL, MongoDB or Redis) you would use for each of these and why: customers, orders, products, the last 10 products a customer viewed, the number of times each product page was opened today.
+
+**Deliverables.**
+
+- `README.md` with the screenshot and the answers to tasks 2 to 5.
+- `shop.json`.
+
+**Done when.** The screenshot shows the three services `healthy`, at least 5 problems of at least 3 different kinds are identified by line, and every engine choice in task 5 has a reason based on the theory of this session.
 
 ## Challenge (obrigatório, em `challenge/`)
 
-Write a Python script that starts 10 processes, each appending 1,000 records to the same JSON file (read, append, write back). Count how many records end up in the file. Then do the same against a PostgreSQL table with 10 concurrent connections and compare. Explain in a few sentences why the numbers differ.
+Enunciado completo em [challenge/README.md](challenge/README.md).
 
 ## Checklist
 
-- [ ] Screenshot of `docker compose ps` with the three engines healthy
-- [ ] Data model of Project I: list of tables and relationships
-- [ ] Three concrete problems in that model, with file and line for each
-- [ ] What would happen with 100,000 records, or two users writing at the same time
-- [ ] Would any of the data be better in MongoDB or Redis? Why?
+- [ ] Screenshot of `docker compose ps` with the three engines `healthy`
+- [ ] `shop.json` saved in the exercise folder
+- [ ] Task 2: data model of `shop.json` (entities, fields, relationships)
+- [ ] Task 3: at least 5 problems of at least 3 different kinds, each with line number, kind and consequence
+- [ ] Task 4: 100,000 orders and two concurrent requests
+- [ ] Task 5: engine for customers, orders, products, last 10 viewed products and page-view counts, with reasons
 
 ## Resposta
 
-### 1. `docker compose ps`
-
-![docker compose ps](docker-compose-ps.png)
-
-Os três motores (`postgres:18`, `mongo:8`, `redis:8`) estão `Up (healthy)`. O healthcheck de cada um está definido em [docker-compose.yml](../../docker-compose.yml): `pg_isready`, `db.adminCommand('ping')` e `redis-cli ping`.
-
-### 2. Modelo de dados do Projeto I
-
-Projeto analisado: [sessions/01-database-engines/fastapi](../../sessions/01-database-engines/fastapi/), com o Django e o Next.js da mesma sessão como comparação. A mesma mensagem é gravada nos três motores em `POST /hello` ([main.py:50-73](../../sessions/01-database-engines/fastapi/app/main.py#L50-L73)).
-
-**PostgreSQL**, tabela `hello` ([clients.py:27-31](../../sessions/01-database-engines/fastapi/app/clients.py#L27-L31)):
-
-| Coluna | Tipo | Regras |
-|--------|------|--------|
-| `id` | `integer GENERATED ALWAYS AS IDENTITY` | PK |
-| `msg` | `text` | `NOT NULL` |
-| `created_at` | `timestamptz` | `NOT NULL DEFAULT now()` |
-
-**MongoDB**, coleção `hello` ([main.py:61-63](../../sessions/01-database-engines/fastapi/app/main.py#L61-L63)): `{ _id, msg, tags: ["a", "b"], created_at }`
-
-**Redis** ([main.py:66-67](../../sessions/01-database-engines/fastapi/app/main.py#L66-L67)): `hello:last` (string com a última mensagem) e `hello:count` (contador).
-
-Relações: não há nenhuma relação explícita. É uma única tabela, sem FKs. A "relação" entre a linha do PostgreSQL, o documento do MongoDB e as chaves do Redis existe só porque o código as escreve na mesma request. Nenhum dos três guarda o identificador dos outros.
-
-### 3. Três problemas no modelo
-
-| # | Problema | Ficheiro:linha | Porque é um problema |
-|---|----------|----------------|----------------------|
-| 1 | **Escrita em três motores sem atomicidade nem fonte de verdade.** O `INSERT` no PostgreSQL faz commit ao sair do `with` (linha 58), e só depois se escreve no MongoDB (61) e no Redis (66-67). | [main.py:54-67](../../sessions/01-database-engines/fastapi/app/main.py#L54-L67) | Se o MongoDB ou o Redis falharem, a linha já está no PostgreSQL e os outros não a têm. O `hello:count` passa a ser diferente de `SELECT count(*) FROM hello`, e nada diz qual dos valores está certo. |
-| 2 | **Dados duplicados que divergem.** `msg` é guardada três vezes, e `created_at` duas: `now()` do servidor PostgreSQL e `datetime.now(UTC)` do processo Python. O documento do MongoDB não guarda o `id` da linha. | [clients.py:30](../../sessions/01-database-engines/fastapi/app/clients.py#L30), [main.py:62](../../sessions/01-database-engines/fastapi/app/main.py#L62) | A mesma mensagem fica com dois timestamps diferentes. Sem o `id` no documento, não há forma de cruzar ou reconciliar os dois registos. |
-| 3 | **Falta uma restrição na base de dados.** `msg` só tem `NOT NULL`. A regra "não vazia" existe apenas na aplicação: `Field(min_length=1)` no FastAPI, `msg.strip()` no Django. | [clients.py:29](../../sessions/01-database-engines/fastapi/app/clients.py#L29), [main.py:21](../../sessions/01-database-engines/fastapi/app/main.py#L21), [models.py:5](../../sessions/01-database-engines/django/demo/models.py#L5) | Um `INSERT` direto, um script ou outra app grava `''` ou `'   '` sem erro. No FastAPI, `"   "` passa a validação, porque `min_length` não faz `strip`. A regra devia ser `CHECK (btrim(msg) <> '')`. Além disso, as `tags` estão fixas em `["a", "b"]` ([main.py:62](../../sessions/01-database-engines/fastapi/app/main.py#L62)), ou seja, são dados inventados e não vêm do pedido. |
-
-### 4. Com 100 000 registos ou dois utilizadores a escrever ao mesmo tempo
-
-**100 000 registos.** As leituras aguentam bem: `ORDER BY id DESC LIMIT 5` ([main.py:81](../../sessions/01-database-engines/fastapi/app/main.py#L81)) usa o índice da PK, e `sort("_id", -1).limit(5)` usa o índice de `_id`. O problema é a ligação. `pg_connect()` abre uma ligação nova ao PostgreSQL em cada request ([clients.py:18-20](../../sessions/01-database-engines/fastapi/app/clients.py#L18-L20)). Cada ligação custa um processo no servidor e um handshake, e o PostgreSQL aceita por omissão 100 ligações (`max_connections`). Com muitos pedidos, a API fica lenta ou recebe `too many clients`, e a solução é um pool. Se alguém acrescentar uma pesquisa por `msg` ou por data, isso passa a ser um *full scan*, porque não há índices além da PK.
-
-**Dois utilizadores ao mesmo tempo.** O `IDENTITY` do PostgreSQL e o `INCR` do Redis são atómicos, por isso nenhum `id` se repete e o contador não perde incrementos. Mas os três passos não são atómicos em conjunto. Por exemplo:
-
-1. A insere no PostgreSQL → `id = 1`
-2. B insere no PostgreSQL → `id = 2`
-3. B faz `SET hello:last "B"`
-4. A faz `SET hello:last "A"`
-
-O resultado é que `hello:last` fica com `"A"`, enquanto a última linha no PostgreSQL é a de B. A "última mensagem" mostrada pelo `GET /hello` ([main.py:91](../../sessions/01-database-engines/fastapi/app/main.py#L91)) contradiz a tabela. Se um dos dois pedidos falhar depois do commit, o contador também deixa de bater certo.
-
-### 5. MongoDB ou Redis?
-
-- **PostgreSQL deve ser a fonte de verdade** para a mensagem (`id`, `msg`, `created_at`). São dados que não se podem perder nem contradizer.
-- **Redis** faz sentido para `hello:count` e `hello:last`, mas como dados **derivados**: uma cache que se pode reconstruir a qualquer momento com `SELECT count(*) FROM hello` e `SELECT msg FROM hello ORDER BY id DESC LIMIT 1`. É rápido e serve para um contador muito lido. Mas se o Redis perder dados (o [docker-compose.yml](../../docker-compose.yml) não ativa AOF), o contador volta a 0 e tem de ser reconstruído a partir do PostgreSQL. Para o `last` não ficar errado com escritas concorrentes, deve guardar-se também o `id` (ou usar um sorted set com o `id` como score).
-- **MongoDB**: a cópia da mensagem não acrescenta nada, porque é a mesma estrutura fixa. Só faria sentido se as `tags` (ou outros atributos) viessem do utilizador e variassem de forma de documento para documento. Nesse caso o documento devia guardar o `id` do PostgreSQL. Em relacional, as tags exigiriam uma tabela `hello_tag (hello_id FK, tag)`.
+Resposta em [exercise/README.md](exercise/README.md).
