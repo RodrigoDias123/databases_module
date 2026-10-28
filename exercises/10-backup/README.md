@@ -2,10 +2,51 @@
 
 ## Enunciado
 
-Folder: `exercises/10-backup/runbook.md`
+Folder: `exercises/10-backup/exercise/`
 
-At the start, back up your Pagila. Halfway through, the trainer runs a script that deletes data from 3 tables. Recover the data and document: the commands used, the measured restore time, what was lost between the backup and the disaster (real RPO), and what you would change in your strategy.
+**Goal.** Recover from a data loss with a backup, measure what was lost, and write a runbook someone else can follow.
 
-## Challenge (obrigatório, em `challenge/`)
+**Starting point.** A fresh copy of Pagila (`./scripts/create-db.sh ex10 --pagila --reset`) and these two scripts, saved in your exercise folder. Do not read ahead to fix the damage before it happens: follow the steps in order.
 
-Write `backup.sh` that takes a custom-format dump with a timestamped name and applies a retention policy of 7 daily and 4 weekly backups. Write `verify.sh` that restores the latest dump into a throwaway container, compares row counts of every table against the live database, and exits with a non-zero code on any mismatch. Schedule both with cron and show a log of two runs.
+`activity.sql` (normal work that happens after the backup):
+
+```sql
+INSERT INTO payment (customer_id, staff_id, rental_id, amount, payment_date)
+SELECT customer_id, staff_id, rental_id, 1.99, timestamptz '2026-07-30 12:00+00'
+FROM rental ORDER BY rental_id DESC LIMIT 5;
+```
+
+`disaster.sql` (the incident):
+
+```sql
+BEGIN;
+DELETE FROM payment WHERE payment_date >= '2026-01-01';
+DELETE FROM film_actor WHERE actor_id <= 50;
+DELETE FROM film_category WHERE category_id = 1;
+COMMIT;
+```
+
+**Tasks.**
+
+1. Record the row counts of `payment`, `film_actor` and `film_category`.
+2. Back up `ex10` in custom format into `backups/` (as in the tutorial) and note the time.
+3. Run `activity.sql`, then `disaster.sql`, on `ex10`. Record the row counts again.
+4. Restore the deleted data into `ex10` from your backup, without dropping or recreating the database. Time the restore. Remember that `payment` is partitioned: the rows deleted are in the partitions `payment_p2026_01` to `payment_p2026_07`. `film_actor` and `film_category` still hold part of their rows, so restoring only the missing ones needs a plan (for example `TRUNCATE` and reload, or restore into another database and copy the missing rows).
+5. Record the row counts after the restore and compare them with tasks 1 and 3.
+6. Write the runbook for this incident.
+
+**Deliverables.** `runbook.md` with:
+
+- when to use it and the prerequisites;
+- every command you ran, in order, so that someone else can repeat them;
+- the row counts of tasks 1, 3 and 5;
+- the measured restore time (real RTO);
+- the data lost between the backup and the incident (real RPO), with the query that shows it;
+- how to verify the restore;
+- what you would change in your backup strategy to lose less.
+
+**Done when.** After the restore, the three tables have the same row counts as in task 1, the 5 payments of `activity.sql` are identified as lost, and the runbook can be followed without your help.
+
+## Challenge (opcional, em `challenge/`)
+
+Enunciado completo em [challenge/README.md](challenge/README.md).
