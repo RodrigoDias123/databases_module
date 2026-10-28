@@ -117,8 +117,9 @@ def finish_task(pg1, task_id, status, outcome):
 
 
 def generate_report():
-    """Processa todas as tasks pendentes. Devolve o número de tasks processadas."""
+    """Processa todas as tasks pendentes. Devolve o resultado de cada uma (id, nome, status, outcome)."""
     today = date.today()
+    results = []
 
     with get_pg1_session() as pg1, get_pg2_session() as pg2:
         tasks = claim_tasks(pg1)
@@ -131,12 +132,14 @@ def generate_report():
                 write_reports(pg2, contents)
             except Exception as e:
                 log.exception("Task %d falhou", task.id)
-                finish_task(pg1, task.id, "erro", f"{type(e).__name__}: {e}")
+                status, outcome = "erro", f"{type(e).__name__}: {e}"
             else:
-                finish_task(pg1, task.id, "concluído", f"{len(contents)} relatório(s) gerado(s)")
+                status, outcome = "concluído", f"{len(contents)} relatório(s) gerado(s)"
                 log.info("Task %d concluída: %d relatório(s)", task.id, len(contents))
+            finish_task(pg1, task.id, status, outcome)
+            results.append({"id": task.id, "nome": task.nome, "status": status, "outcome": outcome[:255]})
 
-        return len(tasks)
+        return results
 
 
 def main():

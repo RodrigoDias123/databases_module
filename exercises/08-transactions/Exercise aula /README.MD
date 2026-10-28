@@ -12,7 +12,8 @@ JSON ──> [PG1] ──read──> Generator Service ──JSON──> [PG2]
 2. **Generator Service**: ler os dados da PG1, processar cada pedido (`TasksReq`) e gerar um relatório em JSON.
 3. **Escrita do resultado**: guardar o relatório na **PG2** (`InsightReport` + `ReportContent`) e atualizar o estado do pedido na PG1.
 
-A API, o Redis e a Webapp que aparecem no quadro ficam **fora do âmbito** deste exercício.
+O Redis e a Webapp que aparecem no quadro ficam **fora do âmbito** deste exercício. O Generator Service
+está também exposto por uma API HTTP (FastAPI), descrita em [3.1](#31-generator-service-por-api).
 
 ## O que cada base de dados contém
 
@@ -70,7 +71,8 @@ Host
 └── Docker network
     ├── pg1  (5432 dentro da rede, 5434 no host)
     ├── pg2  (5432 dentro da rede, 5433 no host)
-    └── app  (Python, liga-se a pg1:5432 e pg2:5432)
+    ├── app  (Python, liga-se a pg1:5432 e pg2:5432)
+    └── api  (FastAPI, mesma imagem da app; 8000 dentro da rede e no host)
 ```
 
 - Dentro da rede, a app liga-se às duas bases pelo nome do serviço, ambas na porta **5432**.
@@ -139,6 +141,33 @@ docker compose run --rm --build app python -m app.generator      # PG1 -> PG2
 O `--build` reconstrói a imagem, para apanhar as alterações ao código e ao `data/` (o JSON é copiado para a
 imagem, não montado). A ingestão volta a inserir o ficheiro todo de cada vez que corre. O generator só
 processa as tasks com `status = 'pendente'`.
+
+### 3.1. Generator Service por API
+
+Em vez de correr o generator à mão, o serviço `api` expõe-no por HTTP (`app/api.py`). Cria as tabelas ao arrancar.
+
+```bash
+docker compose up -d --build api
+docker compose run --rm --build app python -m app.ingestion      # JSON -> PG1 (tasks 'pendente')
+```
+
+| Método | Caminho | O que faz |
+|---|---|---|
+| `POST` | `/generate` | processa as tasks pendentes (PG1 -> PG2) e devolve o resultado de cada uma |
+| `GET` | `/tasks` | lista os pedidos da PG1 (filtro opcional `?status=pendente`) |
+| `GET` | `/tasks/{id}` | estado de um pedido (404 se não existir) |
+| `GET` | `/tasks/{id}/reports` | relatórios gerados na PG2 para esse pedido |
+
+A documentação interativa (Swagger) está em `http://localhost:8000/docs`, a partir do host. Dentro do
+devcontainer a porta não está acessível; aí chama-se a API de dentro do container:
+
+```bash
+docker compose exec api python -c "import urllib.request as u; print(u.urlopen(u.Request('http://localhost:8000/generate', method='POST')).read().decode())"
+docker compose exec api python -c "import urllib.request as u; print(u.urlopen('http://localhost:8000/tasks').read().decode())"
+```
+
+Dois `POST /generate` em simultâneo não processam a mesma task: o `FOR UPDATE SKIP LOCKED` em `claim_tasks`
+faz cada pedido apanhar tasks diferentes.
 
 ### 4. Ver os resultados
 
