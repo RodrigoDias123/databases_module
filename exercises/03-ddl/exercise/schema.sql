@@ -1,33 +1,37 @@
-
+-- Exercício 03: biblioteca municipal (modelo do exercício 02)
+--
+-- Corre numa base vazia, a partir da root do repositório:
+--   ./scripts/create-db.sh ex03
+--   docker compose exec -T postgres psql -U postgres -d ex03 -v ON_ERROR_STOP=1 < exercises/03-ddl/exercise/schema.sql
 
 drop table if exists fine, reservation, loan, copy, book_author, book, reader, author, publisher cascade;
 
 create table publisher (
     publisher_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name text NOT NULL UNIQUE,
-    country text
+    country text NOT NULL
 );
 
 create table author (
     author_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name text NOT NULL,
-    birth_year integer CHECK (birth_year >= 1000 AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE))
+    name text NOT NULL
 );
 
 create table reader (
     reader_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name text NOT NULL,
     card_number text NOT NULL UNIQUE,
-    email text UNIQUE,
+    name text NOT NULL,
+    email text NOT NULL UNIQUE,
     phone text,
+    address text NOT NULL,
     registered_on date NOT NULL DEFAULT CURRENT_DATE
 );
 
 create table book (
     book_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    isbn text NOT NULL UNIQUE CHECK (isbn ~ '^[0-9]{13}$'),
     title text NOT NULL,
-    isbn text NOT NULL UNIQUE,
-    publication_year integer CHECK (publication_year >= 1000 AND publication_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    publication_year integer NOT NULL CHECK (publication_year BETWEEN 1000 AND 2100),
     -- RESTRICT: não se apaga uma editora que ainda tem livros no catálogo.
     publisher_id integer NOT NULL REFERENCES publisher(publisher_id) ON DELETE RESTRICT
 );
@@ -39,6 +43,7 @@ create table book_author (
     author_id integer NOT NULL REFERENCES author(author_id) ON DELETE RESTRICT,
     author_order integer NOT NULL CHECK (author_order > 0),
     PRIMARY KEY (book_id, author_id),
+    -- UNIQUE composto: dois autores não podem ter a mesma posição no mesmo livro.
     CONSTRAINT unique_book_author_order UNIQUE (book_id, author_order)
 );
 
@@ -48,43 +53,41 @@ create table copy (
     -- exemplar com empréstimos não é apagado (a FK de loan é RESTRICT).
     book_id integer NOT NULL REFERENCES book(book_id) ON DELETE CASCADE,
     barcode text NOT NULL UNIQUE,
-    acquired_on date,
-    condition text CHECK (condition IN ('new', 'good', 'fair', 'poor'))
+    acquired_on date NOT NULL,
+    condition text NOT NULL CHECK (condition IN ('new', 'good', 'worn', 'damaged'))
 );
 
 create table loan (
     loan_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     -- RESTRICT: o histórico de empréstimos não se perde ao apagar um
     -- exemplar ou um leitor.
-    copy_id integer NOT NULL REFERENCES copy(copy_id) ON DELETE RESTRICT,
     reader_id integer NOT NULL REFERENCES reader(reader_id) ON DELETE RESTRICT,
-    loaned_at timestamptz NOT NULL,
-    due_on date NOT NULL CHECK (due_on >= loaned_at::date),
-    returned_at timestamptz CHECK (returned_at IS NULL OR returned_at >= loaned_at)
+    copy_id integer NOT NULL REFERENCES copy(copy_id) ON DELETE RESTRICT,
+    loaned_at timestamptz NOT NULL DEFAULT now(),
+    due_on date NOT NULL,
+    returned_at timestamptz,
+    CONSTRAINT loan_due_after_loan CHECK (due_on > loaned_at::date),
+    CONSTRAINT loan_returned_after_loan CHECK (returned_at IS NULL OR returned_at >= loaned_at)
 );
+
+-- Um exemplar está no máximo num empréstimo aberto.
+create unique index loan_one_open_per_copy on loan (copy_id) where returned_at IS NULL;
 
 create table reservation (
     reservation_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    -- RESTRICT: não se apaga um livro ou um leitor com reservas registadas.
+    -- CASCADE: as reservas de um leitor não fazem sentido sem o leitor.
+    reader_id integer NOT NULL REFERENCES reader(reader_id) ON DELETE CASCADE,
+    -- RESTRICT: não se apaga um livro que ainda tem reservas.
     book_id integer NOT NULL REFERENCES book(book_id) ON DELETE RESTRICT,
-    reader_id integer NOT NULL REFERENCES reader(reader_id) ON DELETE RESTRICT,
-    -- SET NULL: se o exemplar guardado desaparecer, a reserva continua à
-    -- espera de outro exemplar do mesmo livro.
-    copy_id integer REFERENCES copy(copy_id) ON DELETE SET NULL,
-    reserved_at timestamptz NOT NULL,
-    status text NOT NULL CHECK (status IN ('active', 'fulfilled', 'cancelled')),
-    expires_on date CHECK (expires_on IS NULL OR expires_on >= reserved_at::date)
+    reserved_at timestamptz NOT NULL DEFAULT now(),
+    status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'fulfilled', 'cancelled'))
 );
-
 
 create table fine (
     fine_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     -- RESTRICT: uma multa não pode ficar sem o empréstimo que a originou.
-    loan_id integer NOT NULL REFERENCES loan(loan_id) ON DELETE RESTRICT,
+    -- UNIQUE: no máximo uma multa por empréstimo.
+    loan_id integer NOT NULL UNIQUE REFERENCES loan(loan_id) ON DELETE RESTRICT,
     amount numeric(8,2) NOT NULL CHECK (amount > 0),
-    reason text NOT NULL CHECK (reason IN ('overdue', 'damage', 'loss')),
-    issued_at timestamptz NOT NULL DEFAULT now(),
-    paid_at timestamptz CHECK (paid_at IS NULL OR paid_at >= issued_at)
+    paid_on date
 );
-
-
