@@ -57,11 +57,15 @@ name = "challenge-04"
 version = "0.1.0"
 source = { virtual = "exercises/04-crud/challenge" }
 dependencies = [
+    { name = "faker" },
     { name = "psycopg", extra = ["binary"] },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" }]
+requires-dist = [
+    { name = "faker", specifier = ">=40.43.0" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" },
+]
 
 [[package]]
 name = "click"
