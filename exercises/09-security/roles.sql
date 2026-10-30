@@ -1,5 +1,0 @@
--- Exercise 09: Roles on Pagila
---
--- [ ] Roles: migrations, app, readonly
--- [ ] Proof: DROP TABLE as app fails
--- [ ] Proof: SELECT as readonly works, INSERT fails

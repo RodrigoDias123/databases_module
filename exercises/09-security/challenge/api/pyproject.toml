@@ -1,0 +1,13 @@
+[project]
+name = "ch09-api"
+version = "0.1.0"
+description = "Challenge 09: the same API with read-write and read-only users"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "psycopg[binary]>=3.3",
+    "pymongo>=4.18",
+    "redis>=8.1",
+    "python-dotenv>=1.0",
+]
