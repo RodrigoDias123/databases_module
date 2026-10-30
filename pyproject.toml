@@ -23,4 +23,6 @@ members = [
     "exercises/01-diagnosis/challenge",
     "exercises/04-crud/challenge",
     "exercises/08-transactions/Exercise aula ",
+    "exercises/08-transactions/exercise",
+    "exercises/08-transactions/challenge",
 ]

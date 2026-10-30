@@ -6,7 +6,9 @@ requires-python = ">=3.14"
 members = [
     "challenge",
     "challenge-04",
+    "challenge-08",
     "databases-module",
+    "exercise-08",
     "exercise-08-aula",
 ]
 
@@ -68,6 +70,17 @@ requires-dist = [
 ]
 
 [[package]]
+name = "challenge-08"
+version = "0.1.0"
+source = { virtual = "exercises/08-transactions/challenge" }
+dependencies = [
+    { name = "psycopg", extra = ["binary"] },
+]
+
+[package.metadata]
+requires-dist = [{ name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" }]
+
+[[package]]
 name = "click"
 version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -86,6 +99,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "fastapi", specifier = ">=0.143.3" }]
+
+[[package]]
+name = "exercise-08"
+version = "0.1.0"
+source = { virtual = "exercises/08-transactions/exercise" }
+dependencies = [
+    { name = "psycopg", extra = ["binary"] },
+]
+
+[package.metadata]
+requires-dist = [{ name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" }]
 
 [[package]]
 name = "exercise-08-aula"
