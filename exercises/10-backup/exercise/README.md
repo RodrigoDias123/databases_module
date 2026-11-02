@@ -49,4 +49,40 @@ COMMIT;
 
 ## Challenge (opcional, em `challenge/`)
 
-Enunciado completo em [challenge/README.md](challenge/README.md).
+Enunciado completo em [challenge/README.md](../challenge/README.md).
+
+## Checklist
+
+- [x] Tarefa 1: contagens de `payment`, `film_actor` e `film_category` registadas
+- [x] Tarefa 2: backup em formato custom em `backups/`, com a hora
+- [x] Tarefa 3: `activity.sql` e `disaster.sql` executados, contagens registadas
+- [x] Tarefa 4: dados restaurados em `ex10` sem apagar a base de dados, com o tempo medido
+- [x] Tarefa 5: contagens após o restauro iguais às da tarefa 1
+- [x] Tarefa 6: `runbook.md` com todos os comandos, contagens, RTO, RPO, verificação e melhorias
+
+## Resolução
+
+Ficheiros entregues:
+
+- [runbook.md](runbook.md): o runbook do incidente (entregável principal).
+- [activity.sql](activity.sql) e [disaster.sql](disaster.sql): os dois scripts do enunciado.
+- [counts.sql](counts.sql): contagens das três tabelas (tarefas 1, 3 e 5).
+- [restore.sh](restore.sh): restauro da tarefa 4, `TRUNCATE` das partições `payment_p2026_01` a `payment_p2026_07`, de `film_actor` e de `film_category`, seguido de `pg_restore --data-only` das mesmas tabelas, numa só transação.
+- [rpo.sql](rpo.sql): mostra os 5 pagamentos de `activity.sql` perdidos.
+- [verify.sql](verify.sql): contagem e checksum de cada tabela, para comparar com um restauro completo da mesma dump.
+
+### Resultados
+
+| Tabela | Tarefa 1 | Tarefa 3 | Tarefa 5 |
+|--------|---------:|---------:|---------:|
+| `payment` | 51 061 | 45 780 | 51 061 |
+| `film_actor` | 5 462 | 4 135 | 5 462 |
+| `film_category` | 2 367 | 2 218 | 2 367 |
+
+- RTO medido: 0,144 s para o `restore.sh` (6 757 linhas em 9 tabelas).
+- RPO: 6 s entre o backup e o incidente; em dados, os 5 pagamentos de 1,99 de `activity.sql` (ids 102 095 a 102 099), que não estão na base de dados nem na dump.
+- Verificação: os checksums das três tabelas em `ex10` são iguais aos de um restauro completo da dump em `ex10_check`.
+
+### Como correr
+
+A partir da root do repositório, os passos 0 a 8 de [runbook.md](runbook.md), por ordem.

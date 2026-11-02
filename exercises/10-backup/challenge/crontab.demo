@@ -1,0 +1,6 @@
+# Demo schedule for task 4: every minute, verify 20 s after the backup.
+# Install with "crontab exercises/10-backup/challenge/crontab.demo", wait 2-3 minutes,
+# then remove it with "crontab -r" (each verify starts a container).
+PATH=/usr/local/bin:/usr/bin:/bin
+* * * * * /workspaces/databases_module/exercises/10-backup/challenge/backup.sh >> /workspaces/databases_module/exercises/10-backup/challenge/backups/cron.log 2>&1
+* * * * * sleep 20 && /workspaces/databases_module/exercises/10-backup/challenge/verify.sh >> /workspaces/databases_module/exercises/10-backup/challenge/backups/cron.log 2>&1

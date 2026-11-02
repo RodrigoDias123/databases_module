@@ -1,0 +1,5 @@
+# Production schedule: install with "crontab exercises/10-backup/challenge/crontab".
+# Backup every day at 02:00, verify the newest dump at 02:30 (container time, UTC).
+PATH=/usr/local/bin:/usr/bin:/bin
+0 2 * * *  /workspaces/databases_module/exercises/10-backup/challenge/backup.sh >> /workspaces/databases_module/exercises/10-backup/challenge/backups/cron.log 2>&1
+30 2 * * * /workspaces/databases_module/exercises/10-backup/challenge/verify.sh >> /workspaces/databases_module/exercises/10-backup/challenge/backups/cron.log 2>&1
