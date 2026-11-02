@@ -1,0 +1,13 @@
+[project]
+name = "ch12-api"
+version = "0.1.0"
+description = "Challenge 12: rename customer.email to email_address with expand and contract"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.20.1",
+    "fastapi>=0.162.0",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.6",
+    "sqlalchemy>=2",
+    "uvicorn[standard]>=0.54.0",
+]
