@@ -1,0 +1,9 @@
+[project]
+name = "ex11-orm"
+version = "0.1.0"
+description = "Exercise 11: SQLAlchemy models, generated SQL and an N+1"
+requires-python = ">=3.12"
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "sqlalchemy>=2",
+]

@@ -1,0 +1,14 @@
+[project]
+name = "ch11-orm"
+version = "0.1.0"
+description = "Challenge 11: an automated test against N+1 with SQLAlchemy"
+requires-python = ">=3.12"
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "pytest>=9.2.0",
+    "sqlalchemy>=2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
