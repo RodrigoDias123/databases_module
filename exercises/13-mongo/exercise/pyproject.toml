@@ -1,0 +1,9 @@
+[project]
+name = "ex13-mongo"
+version = "0.1.0"
+description = "Exercise 13: Pagila as MongoDB documents, CRUD, validation and indexes"
+requires-python = ">=3.14"
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "pymongo>=4.19.0",
+]

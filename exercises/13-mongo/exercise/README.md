@@ -1,0 +1,216 @@
+# Exercício 13: MongoDB I, documents, CRUD and validation
+
+## Enunciado
+
+Folder: `exercises/13-mongo/exercise/`
+
+**Goal.** Turn relational data into documents, choosing what to embed and what to reference, and query, validate and index them.
+
+**Starting point.** A fresh copy of Pagila (`./scripts/create-db.sh ex13 --pagila --reset`), the MongoDB database `pagila_docs`, and a uv project:
+
+```bash
+uv init --bare
+uv add pymongo "psycopg[binary]"
+```
+
+The script reads `DATABASE_URL` and `MONGO_URL` from the environment (see `.env.example`). The collections must have these shapes. In this version of Pagila a film can belong to more than one category, so `categories` is an array. Store money as `Decimal128` and dates as BSON dates.
+
+`films` (one document per film, 1,000 documents):
+
+```json
+{
+  "_id": 1,
+  "title": "ACADEMY DINOSAUR",
+  "release_year": 2012,
+  "language": "English",
+  "rating": "PG",
+  "length": 86,
+  "rental_duration": 6,
+  "rental_rate": { "$numberDecimal": "0.99" },
+  "categories": ["Games", "New", "Travel"],
+  "actors": [{ "actor_id": 1, "name": "PENELOPE GUINESS" }, { "actor_id": 10, "name": "CHRISTIAN GABLE" }]
+}
+```
+
+`customers` (one document per customer, 999 documents; `recent_rentals` holds the 10 most recent rentals, ordered by `rental_date` descending and then `rental_id` descending):
+
+```json
+{
+  "_id": 1,
+  "first_name": "MARY",
+  "last_name": "SMITH",
+  "email": "MARY.SMITH@sakilacustomer.org",
+  "store_id": 1,
+  "address": { "city": "Sasebo", "country": "Japan" },
+  "rental_count": 66,
+  "recent_rentals": [
+    { "rental_id": 87420, "film_id": 307, "title": "FELLOWSHIP AUTUMN",
+      "rental_date": { "$date": "2026-07-23T01:38:34.193Z" }, "return_date": null }
+  ]
+}
+```
+
+`rentals` (one document per rental, 51,805 documents; `amount` is the sum of the payments of that rental, 0 when there are none):
+
+```json
+{
+  "_id": 87420,
+  "customer_id": 1,
+  "film_id": 307,
+  "title": "FELLOWSHIP AUTUMN",
+  "categories": ["Children", "Family", "Sci-Fi"],
+  "store_id": 1,
+  "rental_date": { "$date": "2026-07-23T01:38:34.193Z" },
+  "return_date": null,
+  "amount": { "$numberDecimal": "0" }
+}
+```
+
+The examples are film 1, customer 1 and the most recent rental of customer 1 (some arrays are shortened).
+
+**Tasks.**
+
+1. `load.py` reads Pagila and writes the three collections. Running it twice must leave the same documents (use the Pagila IDs as `_id` and upserts or `replace_one`). In the README, justify why actors and categories are embedded in `films`, why only 10 rentals are embedded in `customers`, and why the full history is in `rentals`.
+2. Write these 8 operations in `operations.js` (for `mongosh`) and record the result of each one:
+   1. films rated `PG-13` and longer than 120 minutes. Expected: 118 documents.
+   2. films in which actor 1 appears. Expected: 19 documents.
+   3. films in the category `Horror` with a rental rate of 0.99. Expected: 43 documents.
+   4. customers with at least one rental not returned among their `recent_rentals` (use `$elemMatch`). Expected: 56 documents.
+   5. customer 1 with only `first_name`, `last_name` and the titles of `recent_rentals` (projection). Expected: 1 document with 10 titles.
+   6. raise by 0.50 the rental rate of films rated `NC-17` shorter than 60 minutes (`updateMany` with `$inc`). Expected: 21 documents modified.
+   7. add a rental to the front of customer 1's `recent_rentals` and keep only 10 (`$push` with `$each`, `$position` and `$slice`). Expected: `recent_rentals` still has 10 items and the first one is the new rental.
+   8. an `updateOne` with `upsert: true` and `$setOnInsert` that creates the film `{_id: 1001, title: "TEST FILM"}`, run twice. Expected: the first run upserts 1 document; the second matches 1 and modifies 0.
+3. Add `$jsonSchema` validation to `films` (`validationLevel: "strict"`, `validationAction: "error"`): `title` string, `rating` one of `G`, `PG`, `PG-13`, `R`, `NC-17`, `length` integer between 1 and 999, `rental_rate` decimal, `categories` array of strings, `actors` array of objects with `actor_id` integer and `name` string. Show that `load.py` still runs, and that a document with `rating: "XXX"` and one with `length: "long"` are rejected.
+4. Run `find({"actors.actor_id": 1}).explain("executionStats")` before and after creating an index on `actors.actor_id`, and compare `stage`, `totalDocsExamined` and `nReturned`.
+
+**Deliverables.**
+
+- `load.py`, `pyproject.toml`, `operations.js`, `validation.js`, `index.js`.
+- `README.md` with the commands to run each file, the justifications of task 1, the result of each operation, the rejected inserts with their error and the two `explain` summaries.
+
+**Done when.** The three collections have 1,000, 999 and 51,805 documents, every operation returns the expected result on freshly loaded collections, both invalid documents are rejected, and the plan changes from `COLLSCAN` to `IXSCAN` with 19 documents examined.
+
+## Challenge (opcional, em `challenge/`)
+
+Enunciado completo em [challenge/README.md](challenge/README.md).
+
+## Checklist
+
+- [x] `load.py`: `films`, `customers`, `rentals` (1,000 / 999 / 51,805), idempotent, with justifications
+- [x] `operations.js`: 8 operations with expected results
+- [x] `validation.js`: `$jsonSchema` on `films`, two invalid documents rejected
+- [x] `index.js`: `explain` before and after (`COLLSCAN` -> `IXSCAN`, 19 examined)
+
+## Resolução
+
+Ficheiros entregues:
+
+- [load.py](load.py): lê o Pagila e escreve `films`, `customers` e `rentals` em `pagila_docs`.
+- [operations.js](operations.js): as 8 operações da tarefa 2.
+- [validation.js](validation.js): o `$jsonSchema` de `films` e os dois documentos inválidos.
+- [index.js](index.js): o `explain` antes e depois do índice em `actors.actor_id`.
+- [pyproject.toml](pyproject.toml) e `uv.lock`.
+
+### Como correr
+
+```bash
+# a partir da raiz do repositório
+./scripts/create-db.sh ex13 --pagila --reset
+cd exercises/13-mongo/exercise
+uv sync
+uv run --env-file ../../../.env python load.py
+set -a; . ../../../.env; set +a
+mongosh "$MONGO_URL" --quiet --file operations.js
+mongosh "$MONGO_URL" --quiet --file validation.js
+mongosh "$MONGO_URL" --quiet --file index.js
+```
+
+`DATABASE_URL` tem de apontar para a base `ex13`.
+
+### Tarefa 1: modelação
+
+**Atores e categorias embebidos em `films`.** São listas pequenas e limitadas (no máximo umas dezenas de atores e poucas categorias por filme), que quase nunca mudam e que se leem sempre com o filme. Embebê-las permite responder a "filmes do ator 1" ou "filmes de Horror" com uma só leitura, sem `$lookup`. O nome do ator fica duplicado em vários filmes, mas como raramente muda essa duplicação é barata.
+
+**Só 10 alugueres embebidos em `customers`.** O histórico de um cliente cresce sem limite (o cliente 1 já tem 66). Um array que cresce sempre torna o documento cada vez maior, aproxima-o do limite de 16 MB e torna cada leitura e cada escrita mais caras. O ecrã do cliente só precisa dos alugueres mais recentes, por isso guardamos um subconjunto de tamanho fixo (padrão *subset*), mantido com `$push` + `$position: 0` + `$slice: 10`, e o total em `rental_count`.
+
+**Histórico completo em `rentals`.** Cada aluguer é um documento próprio, com referências (`customer_id`, `film_id`) e uma cópia dos campos mais usados (`title`, `categories`) para não precisar de `$lookup` nos relatórios. Assim o histórico pode crescer sem limite, pode ser consultado e agregado por cliente, filme, categoria, loja ou data, e é aqui que fica o `amount` de cada aluguer.
+
+Output de `load.py`, duas execuções seguidas (os mesmos totais, porque cada documento é escrito com `ReplaceOne(..., upsert=True)` e o `_id` é o ID do Pagila):
+
+```
+$ uv run --env-file ../../../.env python load.py
+films: 1000
+customers: 999
+rentals: 51805
+$ uv run --env-file ../../../.env python load.py
+films: 1000
+customers: 999
+rentals: 51805
+```
+
+### Tarefa 2: operações
+
+Corridas sobre coleções acabadas de carregar.
+
+| # | Operação | Esperado | Obtido |
+|---|----------|----------|--------|
+| 1 | PG-13 e mais de 120 minutos | 118 | 118 |
+| 2 | filmes do ator 1 | 19 | 19 |
+| 3 | Horror com `rental_rate` 0.99 | 43 | 43 (com `NumberDecimal("0.99")`; com `0.99` em double dá 0) |
+| 4 | clientes com aluguer por devolver (`$elemMatch`) | 56 | 56 |
+| 5 | projeção do cliente 1 | 1 documento, 10 títulos | 1 documento (MARY SMITH), 10 títulos |
+| 6 | `$inc` 0.50 em NC-17 com menos de 60 minutos | 21 modificados | matched 21, modified 21 |
+| 7 | `$push` com `$each`, `$position` e `$slice` | 10 itens, o novo primeiro | 10 itens, o primeiro é o `rental_id` 99999 |
+| 8 | `upsert` com `$setOnInsert`, duas vezes | 1 upserted; depois 1 matched, 0 modified | 1.ª: matched 0, upserted 1; 2.ª: matched 1, modified 0, upserted 0 |
+
+```
+1. PG-13 e mais de 120 minutos: 118
+2. filmes do ator 1: 19
+3. Horror com rental_rate 0.99: 43
+4. clientes com aluguer por devolver: 56
+5. projeção do cliente 1: 1 documento, 10 títulos
+6. $inc 0.50 em NC-17 < 60 min: matched 21 modified 21
+7. $push: recent_rentals tem 10 itens; o primeiro é o rental_id 99999
+8. primeira execução: matched 0 modified 0 upserted 1
+8. segunda execução: matched 1 modified 0 upserted 0
+```
+
+### Tarefa 3: validação
+
+A coleção `films` já existe, por isso a validação é aplicada com `collMod` (e não `createCollection`). Correr `validation.js` depois de `operations.js`: o filme 1001 da operação 8 só tem `title` e seria rejeitado com a validação já ativa.
+
+`load.py` a correr com a validação ativa (1001 filmes porque o filme 1001 da operação 8 continua lá; o `load.py` não lhe toca):
+
+```
+$ uv run --env-file ../../../.env python load.py
+films: 1001
+customers: 999
+rentals: 51805
+```
+
+Documento com `rating: "XXX"`:
+
+```
+rating XXX: rejeitado, MongoServerError 121: Document failed validation
+propertyName: 'rating', operatorName: 'enum',
+reason: 'value was not found in enum', consideredValue: 'XXX'
+```
+
+Documento com `length: "long"`:
+
+```
+length long: rejeitado, MongoServerError 121: Document failed validation
+propertyName: 'length', operatorName: 'bsonType', specifiedAs: { bsonType: 'int' },
+reason: 'type did not match', consideredValue: 'long', consideredType: 'string'
+```
+
+### Tarefa 4: índice
+
+`find({"actors.actor_id": 1}).explain("executionStats")` antes e depois de `createIndex({"actors.actor_id": 1})`:
+
+| | `stage` | `totalDocsExamined` | `nReturned` |
+|---|---------|---------------------|-------------|
+| antes | `COLLSCAN` | 1001 | 19 |
+| depois | `IXSCAN` | 19 | 19 |
+
+Sem índice o MongoDB lê todos os documentos da coleção (1001, contando o filme 1001 da operação 8) para devolver 19. Com o índice multikey em `actors.actor_id` vai diretamente às 19 entradas do ator 1 e só lê esses 19 documentos: examinados = devolvidos.

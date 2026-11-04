@@ -1,0 +1,8 @@
+[project]
+name = "ch13-mongo"
+version = "0.1.0"
+description = "Challenge 13: bucket pattern for an unbounded rental history in MongoDB"
+requires-python = ">=3.14"
+dependencies = [
+    "pymongo>=4.19.0",
+]
