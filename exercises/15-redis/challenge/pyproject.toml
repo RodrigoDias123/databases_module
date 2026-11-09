@@ -1,0 +1,13 @@
+[project]
+name = "ch15-redis"
+version = "0.1.0"
+description = "Challenge 15: fixed vs sliding window rate limit in Redis"
+requires-python = ">=3.14"
+dependencies = [
+    "pytest>=9.2.0",
+    "redis>=8.1.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

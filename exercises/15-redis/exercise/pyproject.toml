@@ -1,0 +1,9 @@
+[project]
+name = "ex15-redis"
+version = "0.1.0"
+description = "Exercise 15: Redis data structures and patterns on Pagila"
+requires-python = ">=3.14"
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "redis>=8.1.0",
+]
