@@ -52,9 +52,22 @@ function find_changed_days(watermark, max_rental_id) {
     ]).toArray().map((doc) => doc._id);
 }
 
-function merge_days(days) {
+// Filtra por intervalos de `rental_date` (um por dia, em UTC) em vez de calcular o dia de
+// cada aluguer com $expr. Assim o $match usa o índice em `rental_date` e só lê os alugueres
+// desses dias, em vez de percorrer a coleção toda.
+function day_ranges(days) {
+    return days.map((day) => {
+        const start = new Date(`${day}T00:00:00Z`);
+        const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+        return { rental_date: { $gte: start, $lt: end } };
+    });
+}
+
+function merge_days(days, full_run) {
+    // Na primeira execução são todos os dias, por isso não vale a pena filtrar.
+    const filter = full_run ? {} : { $or: day_ranges(days) };
     db.rentals.aggregate([
-        { $match: { $expr: { $in: [day_of_rental(), days] } } },
+        { $match: filter },
         { $group: { _id: day_of_rental(), rentals: { $sum: 1 }, revenue: { $sum: "$amount" } } },
         { $merge: { into: "daily_revenue", on: "_id", whenMatched: "replace", whenNotMatched: "insert" } }
     ]).toArray();
@@ -71,6 +84,7 @@ function save_watermark(max_rental_id) {
 function run_report() {
     // O teste usa esta variável para confirmar que dias cada execução recalculou.
     globalThis.last_report_days = [];
+    db.rentals.createIndex({ rental_date: 1 });
 
     const watermark = read_watermark();
     const max_rental_id = read_max_rental_id();
@@ -80,7 +94,7 @@ function run_report() {
     }
 
     const days = find_changed_days(watermark, max_rental_id);
-    merge_days(days);
+    merge_days(days, watermark === null);
     save_watermark(max_rental_id);
 
     globalThis.last_report_days = days;

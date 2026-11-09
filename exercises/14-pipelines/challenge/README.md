@@ -32,9 +32,11 @@ Folder: `exercises/14-pipelines/challenge/`
 
 ### Como correr
 
-A coleção `rentals` tem de estar carregada em `pagila_docs` (exercício da sessão 13). A partir desta pasta:
+A coleção `rentals` tem de estar carregada em `pagila_docs` (exercício da sessão 13). O relatório cria um índice em `rentals.rental_date` (se ainda não existir), para cada execução ler só os alugueres dos dias a recalcular.
 
 ```bash
+# a partir da raiz do repositório
+set -a; . ./.env; set +a
 cd exercises/14-pipelines/challenge
 
 # Atualiza o relatório. Sem alugueres novos, não escreve nada.
