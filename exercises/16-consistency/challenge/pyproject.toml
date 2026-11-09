@@ -1,0 +1,9 @@
+[project]
+name = "ch16-outbox"
+version = "0.1.0"
+description = "Challenge 16: keep Redis in sync with PostgreSQL with a transactional outbox"
+requires-python = ">=3.14"
+dependencies = [
+    "psycopg[binary]>=3.3.8",
+    "redis>=8.1.0",
+]
